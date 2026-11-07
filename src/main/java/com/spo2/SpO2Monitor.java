@@ -21,12 +21,11 @@ public class SpO2Monitor {
     }
 
     public String generateWarning(int spo2) {
-
         String status = classifySpO2(spo2);
 
         switch (status) {
             case "CRITICAL":
-                return "Critical reading. Recheck measurement.";
+                return "URGENT: Very low SpO2 reading. Seek medical assessment.";
 
             case "WARNING":
                 return "Low reading. Recheck measurement.";
