@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven-3.10'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -24,7 +28,7 @@ pipeline {
         stage('Archive JAR') {
             steps {
                 archiveArtifacts artifacts: 'target/*.jar',
-                                 excludes: 'target/original-*.jar'
+                    excludes: 'target/original-*.jar'
             }
         }
     }
