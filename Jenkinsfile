@@ -37,6 +37,19 @@ pipeline {
     }
 }
 
+stage('Copy Previous Build Artifact') {
+    steps {
+        copyArtifacts(
+            projectName: env.JOB_NAME,
+            selector: lastSuccessful(),
+            filter: 'target/*.jar',
+            fingerprintArtifacts: true
+        )
+        echo 'Previous successful build artifact copied'
+    }
+}
+
+
         stage('Archive JAR') {
             steps {
                 archiveArtifacts artifacts: 'target/*.jar',
