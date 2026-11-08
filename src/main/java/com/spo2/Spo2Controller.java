@@ -17,6 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class Spo2Controller {
 
     private final SpO2Monitor monitor = new SpO2Monitor();
+    private final NtfyService ntfyService;
+
+    public Spo2Controller(NtfyService ntfyService) {
+        this.ntfyService = ntfyService;
+    }
 
     private Map<String, Object> latestReading = Map.of(
         "status", "WAITING",
@@ -51,6 +56,11 @@ public class Spo2Controller {
         }
 
         latestReading = createReading(spo2, heartRate);
+
+        if ("CRITICAL".equals(latestReading.get("status"))) {
+            ntfyService.sendCriticalAlert(spo2, heartRate);
+        }
+
         return latestReading;
     }
 
@@ -86,14 +96,12 @@ public class Spo2Controller {
             String[] rows = content.split("\\r?\\n");
 
             for (int i = 0; i < rows.length; i++) {
-
                 String row = rows[i].trim();
 
                 if (row.isEmpty()) {
                     continue;
                 }
 
-                // Skip the header row
                 if (i == 0 && row.toLowerCase().contains("spo2")) {
                     continue;
                 }
@@ -122,6 +130,10 @@ public class Spo2Controller {
 
                 readings.add(reading);
                 latestReading = reading;
+
+                if ("CRITICAL".equals(reading.get("status"))) {
+                    ntfyService.sendCriticalAlert(spo2, heartRate);
+                }
             }
 
         } catch (NumberFormatException e) {
