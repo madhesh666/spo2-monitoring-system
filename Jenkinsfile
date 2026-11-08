@@ -24,6 +24,18 @@ pipeline {
                 junit 'target/surefire-reports/*.xml'
             }
         }
+        stage('Publish HTML Report') {
+    steps {
+        publishHTML(target: [
+            reportName: 'OxyCare HTML Report',
+            reportDir: 'reports',
+            reportFiles: 'index.html',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: false
+        ])
+    }
+}
 
         stage('Archive JAR') {
             steps {
